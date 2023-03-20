@@ -132,20 +132,22 @@ SELECT ENAME
  FROM EMP;
 
 /*LAST_DAY(DATE) : 해당 날짜가 속한 달의 마지막 날
- *NEXT_DAY(A, B) : 해당 날짜 기준 다음 b요일 출력(DBEAVER 언어 설정에 따라서 입력해야만 함! 안 알려주셔서 뻘짓함)
+ *NEXT_DAY(A, B) : 해당 날짜 기준 다음 B요일 출력(DBEAVER 언어 설정에 따라서 입력해야만 함! 안 알려주셔서 뻘짓함)
  */
 SELECT SYSDATE
 	 , NEXT_DAY(SYSDATE, '월요일')
 	 , LAST_DAY(SYSDATE)
  FROM DUAL;
 
-/*ROUND(날짜A, 'CC'): 세기반올림
+/*ROUND(날짜A, 'CC'): 세기 반올림
  *ROUND(날짜A, 'YYYY'): 연 반올림
  *ROUND(날짜A, 'Q'): 분기 반올림
  *ROUND(날짜A, 'DDD'): 날짜 반올림
  *ROUND(날짜A, 'HH'): 시간 반올림
  **/
-SELECT SYSDATE, ROUND(SYSDATE,'CC')AS FORMAT_CC
+
+SELECT SYSDATE
+	 , ROUND(TO_DATE('2049-12-31'),'CC') AS FORMAT_CC
 	 , ROUND(SYSDATE, 'YYYY') AS FORMAT_YYYY
 	 , ROUND(SYSDATE, 'Q') AS FORMAT_Q
 	 , ROUND(SYSDATE, 'DDD') AS FORMAT_DDD
@@ -162,7 +164,102 @@ SELECT EMPNO
  FROM EMP 
  WHERE ENAME = 'SCOTT';
 
-
+/* 이게 잘못된 형변환이라는데 그래서 어느부분이 잘못된 형변환이죠?*/
 SELECT 1300 - '1500'
 	 ,'1300' + 1500
  FROM DUAL;
+
+
+/*명시적 형변환
+ * TO_CHAR(날짜, 원하는 형식(EX. 'YYYY'/'MM'/'DD'/'HH'/'MI'/'SS'))
+ */
+SELECT TO_CHAR(SYSDATE, 'YYYY/MM/DD HH24:MI:SS') AS CURRENT_DATETIME
+ FROM DUAL;
+
+SELECT TO_CHAR(SYSDATE, 'YYYY') AS CURRENT_YEAR
+	 , TO_CHAR(SYSDATE, 'MM') AS CURRENT_MONTH
+	 , TO_CHAR(SYSDATE, 'DD') AS CURRENT_DAY
+	 , TO_CHAR(SYSDATE, 'HH') AS CURRENT_HOUR
+	 , TO_CHAR(SYSDATE, 'MI') AS CURRENT_MINUTE
+	 , TO_CHAR(SYSDATE, 'SS') AS CURRENT_SECOND
+ FROM DUAL;
+
+SELECT SYSDATE
+	 , TO_CHAR(SYSDATE, 'MON', 'NLS_LANGUAGE=KOREAN') AS MON_KR
+	 , TO_CHAR(SYSDATE, 'MM', 'NLS_LANGUAGE=KOREAN') AS MM_KR
+	 , TO_CHAR(SYSDATE, 'MON', 'NLS_LANGUAGE=JAPANESE') AS MON_JP
+	 , TO_CHAR(SYSDATE, 'MON', 'NLS_LANGUAGE=ENGLISH') AS MON_EN
+ FROM DUAL;
+
+/*날짜 TO_CHAR 함수*/
+SELECT SYSDATE
+	 , TO_CHAR(SYSDATE, 'HH:MI:SS') AS HH24MISS
+	 , TO_CHAR(SYSDATE, 'HH12:MI:SS PM') AS HH24MISS_AM
+	 , TO_CHAR(SYSDATE, 'HH12:MI:SS A.M.') AS HH24MISS_AMPM
+ FROM DUAL;
+
+
+SELECT TO_NUMBER('10,000', '999,999,999') AS I_DO_NOT_KNOW
+ FROM DUAL;
+
+
+SELECT  *
+ FROM EMP WHERE HIREDATE > TO_DATE('1981/07/01','YYYY/MM/DD');
+ 
+
+SELECT TO_DATE('49/12/10', 'YY/MM/DD') AS YY_YEAR 49
+ FROM DUAL;
+ 
+
+
+/* RR은 2000년대 이전의 연도를 가져올 때 씀!*/
+SELECT TO_DATE('1991-04-11', 'RR/MM/DD')
+	 , TO_DATE('2021-04-11', 'YY/MM/DD')
+ FROM DUAL;
+ 
+
+/* NULL 값 : 알 수 없는 값 계산이 불가능한 값
+NULL 값 비교는  IS NULL<>IS NOT NULL
+
+NVL(입력값, NULL인 경우 대체할 값)
+NVL2(입력값, NULL이 아닌 경우의 값, NULL일 경우의 값) */
+
+SELECT EMPNO
+	 , ENAME
+	 , SAL
+	 , COMM
+	 , SAL + COMM 
+	 , NVL(COMM, 0)
+	 , SAL + NVL(COMM, 0)
+ FROM EMP;
+
+SELECT EMPNO
+	 , ENAME
+	 , COMM 
+	 , NVL2(COMM, 'O', 'X')
+	 , NVL2(COMM, SAL*12+COMM, SAl*12) AS annsal
+ FROM EMP;
+ 
+SELECT EMPNO
+	 , ENAME
+	 , SAL
+	 , COMM
+	 , SAL + COMM 
+	 , NULLIF (COMM, 0)
+	 , SAL + NULLIF(COMM, 0)
+ FROM EMP;
+ 
+
+/*DECODE(입력 컬럼값, '비교값1', 처리1,
+ * 					'비교값2', 처리2,
+ * 					'.....', 처리N) AS 별칭
+ * ***무슨 말인지 모르겠으나 잘 짜여진 것은 DECODE라는 말을 하셨음... 왜 그런지는 추후에 GPT한테 묻는 게 나을 듯...
+ * 
+ * 
+ * CASE 컬럼값
+ * 		WHEN '값1' THEN 처리1
+ * 		WHEN '값2' THEN 처리2
+ * 		WHEN '값N' THEN 처리N
+ * 		ELSE 처리N+1
+ * 		END AS 별칭
+ */
