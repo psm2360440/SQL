@@ -101,23 +101,37 @@ SELECT D.DEPTNO
 	-- 부점정보가 있는 테이블인 DEPTNO를 RIGHT JOIN을 해야 직원이 없는 부점도 출력이 된다.
 		LEFT OUTER JOIN SALGRADE s  ON E1.SAL BETWEEN S.LOSAL AND S.HISAL 
 		LEFT OUTER JOIN EMP e2 ON E1.MGR =E2.EMPNO 
-	ORDER BY D.DEPTNO,E1.EMPNO
-​;
-/* EMP와 DEPT 테이블을 사용하여 다음과 같이 출력하는 SQL문을 작성하세요. */
-/*3-1. 'ALLEN'과 같은 직책(JOB)인 직원들의 사원명, 사원정보, 부서정보를 출력 */
+	ORDER BY D.DEPTNO,E1.EMPNO;
+
+/*3.EMP와 DEPT 테이블을 사용하여 다음과 같이 출력하는 SQL문을 작성하세요*
+ *3-1. 'ALLEN'과 같은 직책(JOB)인 직원들의 사원명, 사원정보, 부서정보를 출력 */
 SELECT E.JOB
 	 , E.ENAME
-	 , E.EMPNO
-	 , E.DEPTNO
- FROM EMP E JOIN dept D ON E.DEPTNO =D.DEPTNO
- WHERE E.JOB =(SELECT JOB FROM EMP WHERE ENAME='ALLEN');
-
+ 	 , E.EMPNO
+ 	 , E.SAL
+ 	 , D.DEPTNO
+ 	 , D.DNAME
+ FROM EMP E JOIN DEPT D ON E.DEPTNO = D.DEPTNO
+  WHERE E.JOB = (SELECT JOB
+  		 FROM EMP
+		 WHERE ENAME = 'ALLEN');
+  				 
+  				
 /*3-2. 전체 사원의 평균 급여(SAL)보다 높은 급여를 받는 사원 정보, 부서정보, 급여 출력 */
-SELECT EMPNO
-	 , DEPTNO
-	 , SAL
- FROM EMP
- WHERE SAL > (SELECT AVG(SAL) FROM EMP;
+SELECT E.EMPNO
+ 	 , E.ENAME
+ 	 , D.DNAME
+ 	 , E.HIREDATE
+ 	 , D.LOC
+ 	 , E.SAL
+ 	 , S.GRADE 
+ FROM EMP E JOIN DEPT D
+ 		ON E.DEPTNO = D.DEPTNO
+ 	    JOIN SALGRADE S
+ 		ON E.SAL BETWEEN S.LOSAL AND S.HISAL
+ WHERE E.SAL > (SELECT AVG(SAL)
+		FROM EMP)
+ ORDER BY E.SAL DESC, E.ENAME DESC;
 
 /* EMP와 DEPT 테이블을 사용하여 다음과 같이 출력하는 SQL문을 작성하세요 */
 /*3-3. 부서코드 10인 부서에 근무하는 사원 중 부서코드 30번 부서에 존재하지 않는 직책을 */
