@@ -124,10 +124,9 @@ SELECT EMPNO
 /* 가진 사원들의 정보를 출력 */
 SELECT EMPNO, ENAME, JOB, DEPTNO, DNAME, LOC
  FROM EMP
- WHERE DEPTNO = 10 AND JOB NOT IN (
-  								SELECT JOB
-  								 FROM EMP
-  								 WHERE DEPTNO = 30);
+ WHERE DEPTNO = 10 AND JOB NOT IN (SELECT JOB
+				   FROM EMP
+				   WHERE DEPTNO = 30);
 ​
 /*3-4. 직책이 SALESMAN인 사람들의 최고 급여보다 높은 급여를 받는 사원들의 정보를 출력 */
 /* 다중행 함수를 사용한 경우 MAX() 사용 */
@@ -156,8 +155,8 @@ SELECT EMPNO
 	 , LOC 
  FROM EMP JOIN DEPT ON EMP.DEPTNO = DEPT.DEPTNO 
  WHERE JOB != 'SALESMAN' AND SAL > ALL (SELECT SAL
- 										 FROM EMP
- 										 WHERE JOB = 'SALESMAN');
+ 					FROM EMP
+ 					WHERE JOB = 'SALESMAN');
  										 
  										
 /* 
